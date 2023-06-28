@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./rewartdToken.sol";
 import "./depositToken.sol";
-
+import "hardhat/console.sol";
 contract Staking is Ownable{
 
     enum rewardTier{
@@ -77,7 +77,8 @@ contract Staking is Ownable{
 
     function withdraw() external{
         userInfo memory tempInfo = stakedUser[msg.sender];
-        require(tempInfo.lockedUntil > block.timestamp, "Timelock not expired yet");
+        //console.log("locked until %s, timestamp %s, %s",tempInfo.lockedUntil, block.timestamp, tempInfo.lockedUntil > block.timestamp);
+        require(tempInfo.lockedUntil < block.timestamp, "Timelock not expired yet");
         claimRewards();
         delete stakedUser[msg.sender];
         dToken.transfer(msg.sender, tempInfo.depositedAmount);
@@ -87,7 +88,9 @@ contract Staking is Ownable{
         userInfo memory tempInfo = stakedUser[_stakedUser];
         uint256 currentBlock = block.number;
         uint256 passedBlock = currentBlock - tempInfo.lastClaimBlock;
+        console.log(currentBlock, tempInfo.lastClaimBlock, passedBlock);
         (,uint256 amount) = checkTier(tempInfo.depositedAmount);
+        console.log(amount);
         rewardAmount = passedBlock * amount;
     }
 
@@ -95,13 +98,13 @@ contract Staking is Ownable{
         rewardPerBlock memory tempTier = rewards;
         if(amount < tempTier.tierOne){
             tier = rewardTier.Low;
-            amount = rewards.tierOne;
+            tokenPerBlock = rewards.tierOne;
         } else if(amount > tempTier.tierOne && amount < tempTier.tierTwo) {
             tier = rewardTier.Medium;
-            amount = rewards.tierTwo;
+            tokenPerBlock = rewards.tierTwo;
         } else if (amount > tempTier.tierThree){
             tier = rewardTier.High;
-            amount = rewards.tierThree;
+            tokenPerBlock = rewards.tierThree;
         }
     }
     
