@@ -60,7 +60,7 @@ contract Staking is Ownable{
 
     function deposit(uint256 amount, uint256 depositTime) external {
         require(dToken.balanceOf(msg.sender) > amount - 1, "Not enought balance");
-        require(depositTime > minimumDepositTime, "Deposit time too low");
+        require(depositTime > minimumDepositTime - 1, "Deposit time too low");
         hasDeposited[msg.sender] = true;
         (rewardTier tier,) = checkTier(amount);
         stakedUser[msg.sender] = userInfo(block.number, block.number, amount, block.timestamp + depositTime, tier);

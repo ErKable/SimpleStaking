@@ -69,5 +69,13 @@ describe(`Simple staking test`, function(){
         }
     })
 
+    it(`Should deposit with users`, async function(){
+        for(let i = 0; i < user.length; i++){
+            await dToken.connect(user[i]).approve(stakingAddress, "100000000000000000000000")
+
+            await staking.connect(user[i]).deposit('100000000000000000000000', '86400')
+            console.log(`User ${userAddress[i]} has deposited`)
+        }
+    })
 
 })
