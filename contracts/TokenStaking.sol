@@ -72,7 +72,7 @@ contract Staking is Ownable{
         require(hasDeposited[msg.sender], "Cannot claim if not deposited");
         uint256 rewardAmount = checkRewards(msg.sender);
         stakedUser[msg.sender].lastClaimBlock = block.number;
-        rToken.transferFrom(address(this), msg.sender, rewardAmount);
+        rToken.transfer(msg.sender, rewardAmount);
     }
 
     function withdraw() external{
@@ -88,9 +88,9 @@ contract Staking is Ownable{
         userInfo memory tempInfo = stakedUser[_stakedUser];
         uint256 currentBlock = block.number;
         uint256 passedBlock = currentBlock - tempInfo.lastClaimBlock;
-        console.log(currentBlock, tempInfo.lastClaimBlock, passedBlock);
+        //console.log(currentBlock, tempInfo.lastClaimBlock, passedBlock);
         (,uint256 amount) = checkTier(tempInfo.depositedAmount);
-        console.log(amount);
+        //console.log(amount);
         rewardAmount = passedBlock * amount;
     }
 

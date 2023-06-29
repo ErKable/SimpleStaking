@@ -103,6 +103,28 @@ describe(`Simple staking test`, function(){
         }
     })
 
+    it(`Should claim rewards with users`, async function(){
+        for(let i = 0; i < userAddress.length; i++){
+            await staking.connect(user[i]).claimRewards()
+            let claimedReward = await rToken.balanceOf(userAddress[i])
+            console.log(`User ${userAddress[i]} has claimed ${claimedReward} tokens`)
+        }
+    })
+
+    it(`Should allow users to withdraw`, async function(){
+        await network.provider.send("evm_increaseTime", [86400])
+        await network.provider.send("evm_mine")
+        for(let i = 0; i < userAddress.length; i++){
+            let userBalBef = await dToken.balanceOf(userAddress[i])
+            console.log(`User balance before ${userBalBef}`)
+
+            await staking.connect(user[i]).withdraw()
+
+            let userBalAft = await dToken.balanceOf(userAddress[i])
+            console.log(`User balance after ${userBalAft}`)
+        }
+    })
+
 
 
 })
