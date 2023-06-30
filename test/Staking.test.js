@@ -117,11 +117,15 @@ describe(`Simple staking test`, function(){
         for(let i = 0; i < userAddress.length; i++){
             let userBalBef = await dToken.balanceOf(userAddress[i])
             console.log(`User balance before ${userBalBef}`)
+            let userRew = await rToken.balanceOf(userAddress[i])
+            console.log(`User reward balance before ${userRew}`)
 
             await staking.connect(user[i]).withdraw()
 
             let userBalAft = await dToken.balanceOf(userAddress[i])
             console.log(`User balance after ${userBalAft}`)
+            let userRewAft = await rToken.balanceOf(userAddress[i])
+            console.log(`User reward balance after ${userRewAft}`)
         }
     })
 
