@@ -39,6 +39,8 @@ contract Staking is Ownable{
     event StakingCreated(uint256 indexed at);
     event PoolFunded(uint256 indexed at, uint256 indexed amount);
     event UserStaked(address indexed user, uint256 indexed depositedAmount, uint256 indexed at);
+    event UserWithdrawn(address indexed user, uint256 indexed at);
+    event UserClaimed(address indexed user, uint256 indexed amount, uint256 indexed at);
 
     constructor(address _tokenToDeposit, address _rewardToken, uint256[] memory _rewardPerBlock, uint256 _minimumDepositTime)  {
         require(_rewardPerBlock.length > 0, "RPB too short");
@@ -75,6 +77,7 @@ contract Staking is Ownable{
         uint256 rewardAmount = checkRewards(msg.sender);
         stakedUser[msg.sender].lastClaimBlock = block.number;
         rToken.transfer(msg.sender, rewardAmount);
+        emit UserClaimed(msg.sender, rewardAmout, block.timestamp);
     }
 
     function withdraw() external{
@@ -84,6 +87,7 @@ contract Staking is Ownable{
         delete stakedUser[msg.sender];
         --totalStakers;
         dToken.transfer(msg.sender, tempInfo.depositedAmount);
+        emit UserWithdrawn(msg.sender, block.timestamp);
     }
 
     function checkRewards(address _stakedUser) public view returns(uint256 rewardAmount) {
