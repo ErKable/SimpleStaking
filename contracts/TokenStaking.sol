@@ -4,7 +4,6 @@ pragma solidity 0.8.19;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./rewartdToken.sol";
 import "./depositToken.sol";
-import "hardhat/console.sol";
 contract Staking is Ownable{
 
     enum rewardTier{
@@ -32,8 +31,10 @@ contract Staking is Ownable{
     uint256 public rTokenBalance;
     uint256 public minimumDepositTime;
     rewardPerBlock public rewards;
+    uint256 public totalStakers;
     mapping(address => bool) public hasDeposited;
     mapping(address => userInfo) public stakedUser;
+
 
     event StakingCreated(uint256 indexed at);
     event PoolFunded(uint256 indexed at, uint256 indexed amount);
@@ -64,6 +65,7 @@ contract Staking is Ownable{
         hasDeposited[msg.sender] = true;
         (rewardTier tier,) = checkTier(amount);
         stakedUser[msg.sender] = userInfo(block.number, block.number, amount, block.timestamp + depositTime, tier);
+        ++totalStakers;
         dToken.transferFrom(msg.sender, address(this), amount);
         emit UserStaked(msg.sender, amount, block.timestamp);
     }
@@ -77,10 +79,10 @@ contract Staking is Ownable{
 
     function withdraw() external{
         userInfo memory tempInfo = stakedUser[msg.sender];
-        //console.log("locked until %s, timestamp %s, %s",tempInfo.lockedUntil, block.timestamp, tempInfo.lockedUntil > block.timestamp);
         require(tempInfo.lockedUntil < block.timestamp, "Timelock not expired yet");
         claimRewards();
         delete stakedUser[msg.sender];
+        --totalStakers;
         dToken.transfer(msg.sender, tempInfo.depositedAmount);
     }
 
@@ -88,9 +90,7 @@ contract Staking is Ownable{
         userInfo memory tempInfo = stakedUser[_stakedUser];
         uint256 currentBlock = block.number;
         uint256 passedBlock = currentBlock - tempInfo.lastClaimBlock;
-        //console.log(currentBlock, tempInfo.lastClaimBlock, passedBlock);
         (,uint256 amount) = checkTier(tempInfo.depositedAmount);
-        //console.log(amount);
         rewardAmount = passedBlock * amount;
     }
 
@@ -106,6 +106,10 @@ contract Staking is Ownable{
             tier = rewardTier.High;
             tokenPerBlock = rewards.tierThree;
         }
+    }
+
+    function getTotalTokenLocked() external view returns(uint256 stakingBalance){
+        stakingBalance = dToken.balanceOf(address(this));
     }
     
 }

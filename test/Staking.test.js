@@ -111,6 +111,16 @@ describe(`Simple staking test`, function(){
         }
     })
 
+    it(`Should check the staking balance`, async function(){
+        let stakbal = await staking.getTotalTokenLocked()
+        console.log(`Total token locked: ${stakbal}`)
+    })
+
+    it(`Should check the number of total user in staking`, async function(){
+        let totalUserInStak = await staking.totalStakers()
+        console.log(`Total user in staking ${totalUserInStak}`)
+    })
+
     it(`Should allow users to withdraw`, async function(){
         await network.provider.send("evm_increaseTime", [86400])
         await network.provider.send("evm_mine")
@@ -129,6 +139,10 @@ describe(`Simple staking test`, function(){
         }
     })
 
+    it(`Should check the number of total user in staking`, async function(){
+        let totalUserInStak = await staking.totalStakers()
+        console.log(`Total user in staking ${totalUserInStak}`)
+    })
 
 
 })
