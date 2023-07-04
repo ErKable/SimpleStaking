@@ -4,10 +4,9 @@ pragma solidity 0.8.19;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./rewartdToken.sol";
 import "./depositToken.sol";
-import "hardhat/console.sol";
 contract Staking is Ownable{
 
-    enum rewardTier{
+    enum rewardTier {
         Low,
         Medium,
         High
@@ -86,6 +85,7 @@ contract Staking is Ownable{
         require(tempInfo.lockedUntil < block.timestamp, "Timelock not expired yet");
         claimRewards();
         delete stakedUser[msg.sender];
+        hasDeposited[msg.sender] = false;
         --totalStakers;
         dToken.transfer(msg.sender, tempInfo.depositedAmount);
         emit UserWithdrawn(msg.sender, block.timestamp);
@@ -100,9 +100,7 @@ contract Staking is Ownable{
     }
 
     function checkTier(uint256 amount) public view returns(rewardTier tier, uint256 tokenPerBlock) {
-        console.log(amount);
         rewardPerBlock memory tempTier = rewards;
-        console.log(tempTier.tierOne, tempTier.tierTwo, tempTier.tierThree);
         if(amount <= tempTier.tierOne){
             tier = rewardTier.Low;
             tokenPerBlock = rewards.tierOne;
