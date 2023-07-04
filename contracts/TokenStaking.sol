@@ -4,6 +4,7 @@ pragma solidity 0.8.19;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./rewartdToken.sol";
 import "./depositToken.sol";
+import "hardhat/console.sol";
 contract Staking is Ownable{
 
     enum rewardTier{
@@ -77,7 +78,7 @@ contract Staking is Ownable{
         uint256 rewardAmount = checkRewards(msg.sender);
         stakedUser[msg.sender].lastClaimBlock = block.number;
         rToken.transfer(msg.sender, rewardAmount);
-        emit UserClaimed(msg.sender, rewardAmout, block.timestamp);
+        emit UserClaimed(msg.sender, rewardAmount, block.timestamp);
     }
 
     function withdraw() external{
@@ -99,14 +100,16 @@ contract Staking is Ownable{
     }
 
     function checkTier(uint256 amount) public view returns(rewardTier tier, uint256 tokenPerBlock) {
+        console.log(amount);
         rewardPerBlock memory tempTier = rewards;
-        if(amount < tempTier.tierOne){
+        console.log(tempTier.tierOne, tempTier.tierTwo, tempTier.tierThree);
+        if(amount <= tempTier.tierOne){
             tier = rewardTier.Low;
             tokenPerBlock = rewards.tierOne;
-        } else if(amount > tempTier.tierOne && amount < tempTier.tierTwo) {
+        } else if(amount >= tempTier.tierOne && amount <= tempTier.tierTwo) {
             tier = rewardTier.Medium;
             tokenPerBlock = rewards.tierTwo;
-        } else if (amount > tempTier.tierThree){
+        } else if (amount >= tempTier.tierThree){
             tier = rewardTier.High;
             tokenPerBlock = rewards.tierThree;
         }

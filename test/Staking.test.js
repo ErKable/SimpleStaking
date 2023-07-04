@@ -144,5 +144,9 @@ describe(`Simple staking test`, function(){
         console.log(`Total user in staking ${totalUserInStak}`)
     })
 
-
+    it(`Should check tiers`, async function(){
+        let amount = "100001"
+        let tier = await staking.checkTier(amount)
+        console.log(`Tier: ${tier}`)
+    })
 })
