@@ -1,16 +1,21 @@
 .stakCard    
     background: linear-gradient(to bottom left, rgb(35, 35, 36) 0%, rgb(18, 18, 18) 35%, rgb(7, 7, 7) 100%) 
-    width: 100%
+    width: 25rem
+    height: 35rem
     border-radius: 10px
     text-align: center
+    display: flex   
+    flex-direction: column
+    justify-content: space-around
 
 .mainInfo
-    margin: 2% 1%
-    padding-top: 2%
-
-.operation
-    margin-top: 10%
-
+    display: flex
+    flex-direction: column
+    justify-content: space-around
+    align-items: flex-start
+    padding: 5rem 2rem
+    height: 3rem
+    
 .deposit, .withdraw
     display: flex   
     justify-content: space-around
@@ -25,6 +30,7 @@
     color: black
     font-size: 15px
     font-weight: 600
+    cursor: pointer
     &:hover
         background-color:  rgba(74,56,102,255)
         color: rgba(255, 39, 82, 0.779)

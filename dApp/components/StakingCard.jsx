@@ -7,8 +7,10 @@ function StakingCard() {
         <div className={style.stakCard}>
             <div className={style.mainInfo}>
                 <h1>SimpleStaking</h1>
-                <h3>999.999.999 DT</h3>
-                <h5>TOTAL TOKEN LOKED</h5>
+                <div>
+                    <h3>999.999.999 DT</h3>
+                    <h5>TOTAL TOKEN LOKED</h5>
+                </div>
             </div>
 
             <div>
