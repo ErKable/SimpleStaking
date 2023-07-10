@@ -14,7 +14,9 @@
     "next": "13.4.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-tsparticles": "^2.10.1",
     "sass": "^1.63.6",
+    "tsparticles": "^2.10.1",
     "viem": "^1.2.9",
     "wagmi": "^1.3.7"
   },

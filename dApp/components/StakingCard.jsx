@@ -24,7 +24,12 @@ function StakingCard() {
                             <button className={style.opBut}>Deposit</button>
                         </div>
                     </div>
-                
+
+                    <div className={style.claimBox}>
+                        <h5>Pending Rewards: 100.000.000</h5>
+                        <button className={style.opBut}>Claim</button>
+                        
+                    </div>
 
                     <div className={style.withdrawBox}>
                         <h5>Deposited Amount: 100.000.000</h5>

@@ -11,6 +11,7 @@ import {
 } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
+import ParticleBG from '../components/ParticleBG';
 
 const { chains, publicClient } = configureChains(
   [polygonMumbai],
@@ -38,6 +39,7 @@ function MyApp({ Component, pageProps }) {
     <WagmiConfig config={wagmiConfigz}>
       <RainbowKitProvider chains={chains} theme={darkTheme({accentColor: '#ff2753', accentColorForeground: 'black'})}>
         <Component {...pageProps} />
+        <ParticleBG/>
       </RainbowKitProvider>
     </WagmiConfig>
   )
