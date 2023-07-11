@@ -1,14 +1,21 @@
 import React from "react";
 import style from '../styles/StakingCard.module.sass'
+import { ethers } from "ethers";
+import { useState, useEffect } from "react";
 
-function StakingCard() {
+function StakingCard({totalToken, dTokSymbol, dtDec}) {
+    const [parsedAmount, setParsedAmount] = useState(0)
 
+    useEffect(() => {
+        let pAmnt = ethers.utils.parseUnits(totalToken.toString(), dtDec)
+        setParsedAmount(pAmnt.toString())
+    }, [totalToken, dtDec])
     return(
         <div className={style.stakCard}>
             <div className={style.mainInfo}>
-                <h1>SimpleStaking</h1>
+                <h1>RedBird Staking</h1>
                 <div>
-                    <h3>999.999.999 DT</h3>
+                    <h3>{parsedAmount} {dTokSymbol}</h3>
                     <h5>TOTAL TOKEN LOKED</h5>
                 </div>
             </div>

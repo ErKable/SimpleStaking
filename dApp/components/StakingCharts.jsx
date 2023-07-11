@@ -2,14 +2,15 @@ import React from "react";
 import style from '../styles/StakingCharts.module.sass'
 import Charts from "./Charts";
 
-function StakingCharts() {
+function StakingCharts({totalStakers}) {
     return(
         <div className={style.mainCharts}>
 
             <div className={style.infoBox}>
                 <div className={style.info}>
                     <div className={style.textInfo}>
-                        HEY
+                        Total Stakers
+                        <p>{totalStakers}</p>
                     </div>
                     <div className={style.chartInfo}>
                         <Charts/>
@@ -20,7 +21,7 @@ function StakingCharts() {
             <div className={style.infoBox}>
                 <div className={style.info}>
                     <div className={style.textInfo}>
-                        HEY
+                        Pending Rewards
                     </div>
                     <div className={style.chartInfo}>
                         <Charts/>
@@ -31,7 +32,7 @@ function StakingCharts() {
             <div className={style.infoBox}>
                 <div className={style.info}>
                     <div className={style.textInfo}>
-                        HEY
+                        Tier
                     </div>
                     <div className={style.chartInfo}>
                         <Charts/>
