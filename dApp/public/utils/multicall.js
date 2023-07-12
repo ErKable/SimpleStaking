@@ -20,3 +20,18 @@ export async function viewMulticall(){
     ]) 
     return {totalStakers, totalTokenLocked, dtSymbol, dtDecimals, rtSymbol, rtDecimals}
 }
+
+
+export async function userMulticall(userAddress){
+    console.log('User multicall address: ', userAddress)
+    const provider = new providers.MulticallProvider(new ethersProviders.JsonRpcProvider("https://rpc-mumbai.maticvigil.com"))
+    const staking = new ethers.Contract(stakingAddress, abi, provider)
+    const dToken = new ethers.Contract(depostiTokenAddress, erc20, provider)
+    const [balance, pRewards, userInfo] = await Promise.all([
+        dToken.balanceOf(userAddress),
+        staking.checkRewards(userAddress),
+        staking.stakedUser(userAddress)
+    ])
+    console.log(balance, pRewards, userInfo)
+    return {balance, pRewards, userInfo}
+}

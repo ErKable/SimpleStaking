@@ -2,14 +2,41 @@ import React from "react";
 import style from '../styles/StakingCard.module.sass'
 import { ethers } from "ethers";
 import { useState, useEffect } from "react";
+import { useWalletClient } from 'wagmi'
+import { parseUnits } from 'viem'
+import { stakingAddress, depostiTokenAddress, rewardTokenAddress } from "../public/utils/variables";
+import { abi } from '../public/abi'
+import { erc20 } from "../public/ercAbi";
+
 
 function StakingCard({totalToken, dTokSymbol, dtDec}) {
     const [parsedAmount, setParsedAmount] = useState(0)
+    const [amountToDeposit, setAmountToDeposit] = useState(0)
+    const {data: walletClient} = useWalletClient() 
 
     useEffect(() => {
         let pAmnt = ethers.utils.parseUnits(totalToken.toString(), dtDec)
         setParsedAmount(pAmnt.toString())
     }, [totalToken, dtDec])
+
+    console.log(`Signer`, walletClient)
+
+    async function handleDepositAmount(value){
+        setAmountToDeposit(parseUnits(value.toString(), dtDec))
+        console.log(await walletClient.getAddresses())
+    }
+
+    async function approve() {
+        await walletClient.writeContract({
+            address: '0x86040e441e5395eFff36b870B270D697ecB7CcD0',
+            abi: erc20,
+            functionName: 'approve',
+            account: walletClient.getAddresses()[0],
+            args: [stakingAddress, amountToDeposit]
+        })
+    }
+
+
     return(
         <div className={style.stakCard}>
             <div className={style.mainInfo}>
@@ -27,8 +54,8 @@ function StakingCard({totalToken, dTokSymbol, dtDec}) {
                     <div className={style.depositBox}>
                         <h5>Balance: 100.000.000</h5>
                         <div className={style.deposit}>
-                            <input className={style.inputNum} placeholder="Insert amount to deposit" type="number" />
-                            <button className={style.opBut}>Deposit</button>
+                            <input className={style.inputNum} placeholder="Insert amount to deposit" type="number" onChange={(e) => handleDepositAmount(e.target.value)}/>
+                            <button className={style.opBut} onClick={() => approve()}>Approve</button>
                         </div>
                     </div>
 
