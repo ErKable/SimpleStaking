@@ -12,20 +12,14 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function StakingCard({totalToken, dTokSymbol, dtDec, balance, pRewards, rTokSymb, userInfo, allowance}) {
-    const [parsedAmount, setParsedAmount] = useState(0)
     const [amountToDeposit, setAmountToDeposit] = useState(0)
     const {data: walletClient} = useWalletClient() 
+
     const publicClient = createPublicClient({
         chain: polygonMumbai,
         transport: http('https://rpc-mumbai.maticvigil.com')
-      })
+    })
 
-/*     useEffect(() => {
-        let pAmnt = parseUnits(totalToken.toString(), dtDec ? dtDec : 18)
-        setParsedAmount(pAmnt.toString())
-    }, [totalToken, dtDec])
- */
-    console.log(`Signer`, walletClient)
 
     async function handleDepositAmount(value){
         setAmountToDeposit(parseUnits(value.toString(), dtDec ? dtDec : 18))
@@ -45,14 +39,6 @@ function StakingCard({totalToken, dTokSymbol, dtDec, balance, pRewards, rTokSymb
             await publicClient.waitForTransactionReceipt({
                 hash: tx
             })    
-          
-           /*  let tx = await walletClient.writeContract({
-                address: '0x86040e441e5395eFff36b870B270D697ecB7CcD0',
-                abi: erc20,
-                functionName: 'approve',
-                account: walletClient.getAddresses()[0],
-                args: [stakingAddress, amountToDeposit]
-            }) */
             toast.success('Approved!', {
                 position: 'top-right',
                 autoClose: 3000,
@@ -85,7 +71,9 @@ function StakingCard({totalToken, dTokSymbol, dtDec, balance, pRewards, rTokSymb
                 account: walletClient.getAddresses()[0],
                 args: [amountToDeposit, 86400]
             })
-            await tx.wait()
+            await publicClient.waitForTransactionReceipt({
+                hash: tx
+            }) 
             toast.success('Deposited!', {
                 position: 'top-right',
                 autoClose: 3000,
@@ -116,7 +104,9 @@ function StakingCard({totalToken, dTokSymbol, dtDec, balance, pRewards, rTokSymb
                 functionName: 'claimRewards',
                 account: walletClient.getAddresses()[0],
             })
-            await tx.wait()
+            await publicClient.waitForTransactionReceipt({
+                hash: tx
+            }) 
             toast.success('Claimed!', {
                 position: 'top-right',
                 autoClose: 3000,
