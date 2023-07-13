@@ -20,6 +20,7 @@ function StakingHome(){
     const [dTBalance, setDtBalance] = useState(0)
     const [pRewards, setPRewards] = useState(0)
     const [userInfo, setUserInfo] = useState()
+    const [allowance, setAllowance] = useState(0)
     const {data: walletClient} = useWalletClient()
     const {address, isConnected} = useAccount()
 
@@ -27,23 +28,24 @@ function StakingHome(){
         async function multiView(){
             const {totalStakers, totalTokenLocked, dtSymbol, dtDecimals, rtSymbol, rtDecimals} = await viewMulticall()
             setTotalStakers(Number(totalStakers))
-            setTotalTokenLocked(Number(totalTokenLocked))
+            setTotalTokenLocked(formatUnits(totalTokenLocked, dtDecimals ? dtDecimals : 18))
+            console.log(formatUnits(totalTokenLocked, dtDecimals ? dtDecimals : 18))
             setDtSymbol(dtSymbol.toString())
             setDtDecimals(Number(dtDecimals))
             setRtSymbol(rtSymbol.toString())
             setRtDecimals(Number(rtDecimals))          
         }
         multiView()
-        //console.log(totalStakers, totalTokenLocked, dtSymbol, dtDecimals, rtSymbol, rtDecimals)
     }, [])
 
     useEffect(() => {
         async function userMultiview(){
             console.log('useEffect address: ', address)
-            const {balance, pRewards, userInfo} = await userMulticall(address)
+            const {balance, allowance, pRewards, userInfo} = await userMulticall(address)
             setDtBalance(formatUnits(balance, dtDecimals ? dtDecimals : 18))
             setPRewards(formatUnits(pRewards, rtDecimals ? rtDecimals : 18))
             setUserInfo(userInfo)
+            setAllowance(Number(allowance))
         }
         isConnected ? 
         userMultiview() : 
@@ -58,7 +60,7 @@ function StakingHome(){
             <div className={style.staking}>
                 <div className={style.box}>
                     <StakingCard totalToken={totalTokenLocked} dTokSymbol={dtSymbol} dtDec={dtDecimals} balance={dTBalance}
-                    pRewards={pRewards} rTokSymb={rtSymbol}/>
+                    pRewards={pRewards} rTokSymb={rtSymbol} userInfo={userInfo} allowance={allowance}/>
                 </div>
                 
                 <div className={style.box}>

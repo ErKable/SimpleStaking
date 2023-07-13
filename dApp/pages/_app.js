@@ -12,6 +12,9 @@ import {
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 import ParticleBG from '../components/ParticleBG';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const { chains, publicClient } = configureChains(
   [polygonMumbai],
@@ -38,6 +41,7 @@ function MyApp({ Component, pageProps }) {
   return (    
     <WagmiConfig config={wagmiConfigz}>
       <RainbowKitProvider chains={chains} theme={darkTheme({accentColor: '#ff2753', accentColorForeground: 'black'})}>
+        <ToastContainer />
         <Component {...pageProps} />
         <ParticleBG/>
       </RainbowKitProvider>
