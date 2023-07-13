@@ -3,7 +3,8 @@ import style from '../styles/StakingCard.module.sass'
 import { ethers } from "ethers";
 import { useState, useEffect } from "react";
 import { useWalletClient } from 'wagmi'
-import { parseUnits, formatUnits } from 'viem'
+import { parseUnits, formatUnits, createPublicClient, http } from 'viem'
+import { polygonMumbai } from 'viem/chains'
 import { stakingAddress, depostiTokenAddress, rewardTokenAddress } from "../public/utils/variables";
 import { abi } from '../public/abi'
 import { erc20 } from "../public/ercAbi";
@@ -14,6 +15,10 @@ function StakingCard({totalToken, dTokSymbol, dtDec, balance, pRewards, rTokSymb
     const [parsedAmount, setParsedAmount] = useState(0)
     const [amountToDeposit, setAmountToDeposit] = useState(0)
     const {data: walletClient} = useWalletClient() 
+    const publicClient = createPublicClient({
+        chain: polygonMumbai,
+        transport: http('https://rpc-mumbai.maticvigil.com')
+      })
 
 /*     useEffect(() => {
         let pAmnt = parseUnits(totalToken.toString(), dtDec ? dtDec : 18)
@@ -28,6 +33,7 @@ function StakingCard({totalToken, dTokSymbol, dtDec, balance, pRewards, rTokSymb
     }
 
     async function approve() {
+        
         try{
             let tx = await walletClient.writeContract({
                 address: '0x86040e441e5395eFff36b870B270D697ecB7CcD0',
@@ -36,7 +42,17 @@ function StakingCard({totalToken, dTokSymbol, dtDec, balance, pRewards, rTokSymb
                 account: walletClient.getAddresses()[0],
                 args: [stakingAddress, amountToDeposit]
             })
-            await tx.wait()
+            await publicClient.waitForTransactionReceipt({
+                hash: tx
+            })    
+          
+           /*  let tx = await walletClient.writeContract({
+                address: '0x86040e441e5395eFff36b870B270D697ecB7CcD0',
+                abi: erc20,
+                functionName: 'approve',
+                account: walletClient.getAddresses()[0],
+                args: [stakingAddress, amountToDeposit]
+            }) */
             toast.success('Approved!', {
                 position: 'top-right',
                 autoClose: 3000,
@@ -92,6 +108,37 @@ function StakingCard({totalToken, dTokSymbol, dtDec, balance, pRewards, rTokSymb
         }
     }
 
+    async function claim(){
+        try{
+            let tx = await walletClient.writeContract({
+                address: '0x04fcda1a2478388FF0Ea011fC1Aa4FD027E7f136',
+                abi: abi,
+                functionName: 'claimRewards',
+                account: walletClient.getAddresses()[0],
+            })
+            await tx.wait()
+            toast.success('Claimed!', {
+                position: 'top-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        } catch(e) {
+            toast.error(`${e.details}`, {
+                position: 'top-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+        } 
+    }
+
 
     return(
         <div className={style.stakCard}>
@@ -119,7 +166,7 @@ function StakingCard({totalToken, dTokSymbol, dtDec, balance, pRewards, rTokSymb
 
                     <div className={style.claimBox}>
                         <h5>Pending Rewards: {parseFloat(pRewards).toFixed(14)} {rTokSymb}</h5>
-                        <button className={style.opBut}>Claim</button>
+                        <button className={style.opBut} onClick={() => claim()}>Claim</button>
                         
                     </div>
 
