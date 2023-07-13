@@ -8,6 +8,8 @@ import { viewMulticall, userMulticall } from "../public/utils/multicall";
 import { useWalletClient } from 'wagmi'
 import { useAccount } from 'wagmi'
 import { formatUnits } from 'viem'
+import { publicClient } from "./StakingCard";
+import { abi } from '../public/abi'
 
 function StakingHome(){
     const [totalStakers, setTotalStakers] = useState(0)
@@ -21,6 +23,7 @@ function StakingHome(){
     const [pRewards, setPRewards] = useState(0)
     const [userInfo, setUserInfo] = useState()
     const [allowance, setAllowance] = useState(0)
+    const [tierInfo, setTierInfo] = useState([])
     const {data: walletClient} = useWalletClient()
     const {address, isConnected} = useAccount()
 
@@ -51,6 +54,20 @@ function StakingHome(){
         userMultiview() : 
         null
     }, [walletClient, address])
+
+    useEffect(() => {
+        async function getTier(){
+            const data = await publicClient.readContract({
+                address: '0x04fcda1a2478388FF0Ea011fC1Aa4FD027E7f136',
+                abi: abi,
+                functionName: 'checkTier',
+                args: [userInfo[1]]
+            })
+            setTierInfo(data)
+        }
+        getTier()
+
+    }, [userInfo])
     
     console.log('balance: ', dTBalance)
     console.log('p reward: ', pRewards)
@@ -64,7 +81,7 @@ function StakingHome(){
                 </div>
                 
                 <div className={style.box}>
-                    <StakingCharts totalStakers={totalStakers}/>
+                    <StakingCharts totalStakers={totalStakers} pRewards={pRewards} tierInfo={tierInfo}/>
                 </div>
             </div>
         </Layout>

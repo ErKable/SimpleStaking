@@ -27,12 +27,12 @@ export async function userMulticall(userAddress){
     const provider = new providers.MulticallProvider(new ethersProviders.JsonRpcProvider("https://rpc-mumbai.maticvigil.com"))
     const staking = new ethers.Contract(stakingAddress, abi, provider)
     const dToken = new ethers.Contract(depostiTokenAddress, erc20, provider)
-    const [balance, allowance,pRewards, userInfo] = await Promise.all([
+    const [balance, allowance,pRewards, userInfo, tier] = await Promise.all([
         dToken.balanceOf(userAddress),
         dToken.allowance(userAddress, stakingAddress),
         staking.checkRewards(userAddress),
-        staking.stakedUser(userAddress)
+        staking.stakedUser(userAddress),
     ])
-    console.log(balance, allowance, pRewards, userInfo)
-    return {balance, allowance, pRewards, userInfo}
+    console.log(balance, allowance, pRewards, userInfo, tier)
+    return {balance, allowance, pRewards, userInfo, tier}
 }

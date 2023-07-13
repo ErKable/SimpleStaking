@@ -11,14 +11,15 @@ import { erc20 } from "../public/ercAbi";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+export const publicClient = createPublicClient({
+    chain: polygonMumbai,
+    transport: http('https://rpc-mumbai.maticvigil.com')
+})
 function StakingCard({totalToken, dTokSymbol, dtDec, balance, pRewards, rTokSymb, userInfo, allowance}) {
     const [amountToDeposit, setAmountToDeposit] = useState(0)
     const {data: walletClient} = useWalletClient() 
 
-    const publicClient = createPublicClient({
-        chain: polygonMumbai,
-        transport: http('https://rpc-mumbai.maticvigil.com')
-    })
+
 
 
     async function handleDepositAmount(value){
