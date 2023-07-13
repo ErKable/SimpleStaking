@@ -18,8 +18,10 @@ function StakingHome(){
     const [rtDecimals, setRtDecimals] = useState(0)
 
     const [dTBalance, setDtBalance] = useState(0)
+    const [pRewards, setPRewards] = useState(0)
+    const [userInfo, setUserInfo] = useState()
     const {data: walletClient} = useWalletClient()
-    const {address} = useAccount()
+    const {address, isConnected} = useAccount()
 
     useEffect(() => {
         async function multiView(){
@@ -38,19 +40,25 @@ function StakingHome(){
     useEffect(() => {
         async function userMultiview(){
             console.log('useEffect address: ', address)
-            const {balance, pRewards, userInfo} = userMulticall(address)
-            setDtBalance(formatUnits(Number(balance), dtDecimals))
-            console.log(Number(balance), pRewards, userInfo)
+            const {balance, pRewards, userInfo} = await userMulticall(address)
+            setDtBalance(formatUnits(balance, dtDecimals ? dtDecimals : 18))
+            setPRewards(formatUnits(pRewards, rtDecimals ? rtDecimals : 18))
+            setUserInfo(userInfo)
         }
-        userMultiview()
+        isConnected ? 
+        userMultiview() : 
+        null
     }, [walletClient, address])
     
     console.log('balance: ', dTBalance)
+    console.log('p reward: ', pRewards)
+    console.log('user info: ', userInfo)
     return(
         <Layout>
             <div className={style.staking}>
                 <div className={style.box}>
-                    <StakingCard totalToken={totalTokenLocked} dTokSymbol={dtSymbol} dtDec={dtDecimals}/>
+                    <StakingCard totalToken={totalTokenLocked} dTokSymbol={dtSymbol} dtDec={dtDecimals} balance={dTBalance}
+                    pRewards={pRewards} rTokSymb={rtSymbol}/>
                 </div>
                 
                 <div className={style.box}>
