@@ -61,14 +61,22 @@ contract Staking is Ownable{
         emit PoolFunded(block.timestamp, amount);
     }
 
-    function deposit(uint256 amount, uint256 depositTime) external {
+    function deposit(uint256 amount, uint256 depositTime) external { 
         require(dToken.balanceOf(msg.sender) > amount - 1, "Not enought balance");
         require(depositTime > minimumDepositTime - 1, "Deposit time too low");
-        hasDeposited[msg.sender] = true;
-        (rewardTier tier,) = checkTier(amount);
-        stakedUser[msg.sender] = userInfo(block.number, block.number, amount, block.timestamp + depositTime, tier);
-        ++totalStakers;
-        dToken.transferFrom(msg.sender, address(this), amount);
+        if(hasDeposited[msg.sender]){
+            userInfo storage tempInfo = stakedUser[msg.sender];
+            tempInfo.depositBlock = block.number;
+            tempInfo.depositedAmount += amount;
+            tempInfo.lockedUntil += depositTime;
+            (tempInfo.userRewardTier, ) = checkTier(tempInfo.depositedAmount + amount); 
+        } else {
+            hasDeposited[msg.sender] = true;
+            (rewardTier tier,) = checkTier(amount);
+            stakedUser[msg.sender] = userInfo(block.number, block.number, amount, block.timestamp + depositTime, tier);
+            ++totalStakers;         
+            dToken.transferFrom(msg.sender, address(this), amount);
+        }
         emit UserStaked(msg.sender, amount, block.timestamp);
     }
 
